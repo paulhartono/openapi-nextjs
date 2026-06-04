@@ -1,0 +1,80 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`emitRoute — edge-cases route > is a stable snapshot 1`] = `
+"import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+import {
+  DeleteUserPostsParams,
+  GetUserPostsParams,
+  GetUserPostsQuery,
+  PostUsersUserIdPostsBody,
+  PostUsersUserIdPostsParams,
+  mockGetUserPostsResponse,
+  mockPostUsersUserIdPostsResponse,
+} from "./route.generated";
+
+export async function GET(
+  request: NextRequest,
+  ctx: { params: Promise<{ userId: string }> },
+) {
+  const params = GetUserPostsParams.safeParse(await ctx.params);
+  if (!params.success) {
+    return NextResponse.json(
+      { error: "Invalid path parameters", issues: params.error.issues },
+      { status: 400 },
+    );
+  }
+  const url = new URL(request.url);
+  const query = GetUserPostsQuery.safeParse(Object.fromEntries(url.searchParams));
+  if (!query.success) {
+    return NextResponse.json(
+      { error: "Invalid query parameters", issues: query.error.issues },
+      { status: 400 },
+    );
+  }
+
+  // TODO: implement GET /users/{userId}/posts
+  return NextResponse.json(mockGetUserPostsResponse(), { status: 200 });
+}
+
+export async function POST(
+  request: NextRequest,
+  ctx: { params: Promise<{ userId: string }> },
+) {
+  const params = PostUsersUserIdPostsParams.safeParse(await ctx.params);
+  if (!params.success) {
+    return NextResponse.json(
+      { error: "Invalid path parameters", issues: params.error.issues },
+      { status: 400 },
+    );
+  }
+  const body = PostUsersUserIdPostsBody.safeParse(await request.json());
+  if (!body.success) {
+    return NextResponse.json(
+      { error: "Invalid request body", issues: body.error.issues },
+      { status: 400 },
+    );
+  }
+
+  // TODO: implement POST /users/{userId}/posts
+  return NextResponse.json(mockPostUsersUserIdPostsResponse(), { status: 201 });
+}
+
+export async function DELETE(
+  request: NextRequest,
+  ctx: { params: Promise<{ userId: string }> },
+) {
+  const params = DeleteUserPostsParams.safeParse(await ctx.params);
+  if (!params.success) {
+    return NextResponse.json(
+      { error: "Invalid path parameters", issues: params.error.issues },
+      { status: 400 },
+    );
+  }
+
+  // TODO: implement DELETE /users/{userId}/posts
+  return new NextResponse(null, { status: 204 });
+}
+"
+`;

@@ -1,0 +1,86 @@
+openapi: 3.1.0
+info:
+  title: Edge Cases API
+  version: 2.0.0
+paths:
+  /users/{userId}/posts:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: getUserPosts
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: a list of posts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostList"
+    post:
+      # no operationId — name must be synthesized
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Post"
+      responses:
+        "201":
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+    delete:
+      operationId: deleteUserPosts
+      responses:
+        "204":
+          description: no content
+components:
+  schemas:
+    Post:
+      type: object
+      required:
+        - id
+        - title
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        # 3.1 nullable spelling
+        summary:
+          type:
+            - string
+            - "null"
+        author:
+          $ref: "#/components/schemas/Author"
+    Author:
+      type: object
+      properties:
+        name:
+          type: string
+        # circular reference back to Post via posts
+        posts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Post"
+    PostList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Post"
+        nextCursor:
+          type: string
+          nullable: true
