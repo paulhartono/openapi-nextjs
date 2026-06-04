@@ -1,6 +1,6 @@
 {
   "name": "openapi-nextjs",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Generate Next.js App Router API routes, zod validators, mocks, and TypeScript types from an OpenAPI/Swagger spec.",
   "keywords": [
     "openapi",
