@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { realpathSync } from "node:fs";
 import { argv } from "node:process";
 import { pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
@@ -89,7 +90,15 @@ export async function main(): Promise<void> {
 }
 
 // Only run when invoked directly as the bin, not when imported (e.g. by tests).
+// argv[1] may be a symlink (npx / node_modules/.bin point at dist/cli.js), so
+// resolve it to its real path before comparing to this module's own URL.
 const entrypoint = argv[1];
-if (entrypoint !== undefined && import.meta.url === pathToFileURL(entrypoint).href) {
-  void main();
+if (entrypoint !== undefined) {
+  try {
+    if (pathToFileURL(realpathSync(entrypoint)).href === import.meta.url) {
+      void main();
+    }
+  } catch {
+    // argv[1] is not a resolvable path (e.g. embedded/REPL use) — do nothing.
+  }
 }
