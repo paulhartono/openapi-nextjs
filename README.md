@@ -109,17 +109,20 @@ pnpm lint && pnpm typecheck && pnpm test && pnpm build   # full gate
 
 npm version patch                      # patch | minor | major — bumps package.json + creates a git tag
 git push --follow-tags origin main     # push the version commit and tag
-
-npm publish --access public            # publish to npm (prepublishOnly rebuilds dist/ automatically)
-npm view openapi-nextjs version        # verify the new version is live
 ```
+
+Pushing the `v*` tag triggers [`.github/workflows/release.yml`](./.github/workflows/release.yml),
+which runs the full gate and **publishes to npm automatically** (using the `NPM_TOKEN` repo secret).
+To publish by hand instead, run `npm publish --access public --otp=<code>` after the push, then
+`npm view openapi-nextjs version` to confirm.
 
 - Follow [semver](https://semver.org): `patch` for bug fixes, `minor` for additive features,
   `major` for breaking changes.
 - The `prepublishOnly` script rebuilds `dist/` at publish time, so the published tarball is never
   stale.
-- Publishing requires npm publish rights — the maintainer must be logged in (`npm login`) as an
-  owner of the package.
+- npm requires **two-factor authentication** to publish: manual publishes need an `--otp=<code>`,
+  and the CI workflow needs a granular access token (with "bypass 2FA"/automation enabled) stored
+  as the GitHub Actions secret **`NPM_TOKEN`**.
 
 ## Roadmap
 
